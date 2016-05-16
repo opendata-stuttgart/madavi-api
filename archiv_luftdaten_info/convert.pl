@@ -36,53 +36,29 @@ sub create_graph {
 	        RRDs::graph(
         	        $output, "--start", "e".$start, "--end", $ymd, "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
         	        "DEF:PMone=data/data-sensor-".$sensor."-".$type.".rrd:PMone:AVERAGE:step=30",
-			"CDEF:v1=PMone", "CDEF:v2=PREV(v1)", "CDEF:v3=PREV(v2)", "CDEF:v4=PREV(v3)", "CDEF:v5=PREV(v4)",
-#			"CDEF:avg1PMone=v1,v2,v3,3,SORT,POP,2,REV,POP",
-#			"CDEF:avg2PMone=v1,v2,v3,v4,v5,5,SORT,POP,4,REV,POP,3,AVG,1000,*,283,/",
-			"CDEF:avg2PMone=v1,1000,*,283,/",
-#			"CDEF:avg2PMone=v1,v2,v3,v4,v5,5,SORT,POP,POP,3,REV,POP,POP"),		# Median over 5 values
-#			"LINE1:PMone#FFFF00:'PM1'",
-#			"LINE1:avg1PMone#FF0000:'PM1'",
-			"LINE1:avg2PMone#FF0000:'PM1'"
+			"CDEF:avgPMone=PMone,1000,*,283,/",
+			"LINE1:avgPMone#FF0000:'PM1'"
 		);
 	} elsif ($particle == 2) {
 	        RRDs::graph(
 		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
 			"DEF:PMtwo=data/data-sensor-".$sensor."-".$type.".rrd:PMtwo:AVERAGE:step=30",
-			"CDEF:v1=PMtwo", "CDEF:v2=PREV(v1)", "CDEF:v3=PREV(v2)", "CDEF:v4=PREV(v3)", "CDEF:v5=PREV(v4)",
-#			"CDEF:avg1PMtwo=v1,v2,v3,3,SORT,POP,2,REV,POP",
-#			"CDEF:avg2PMtwo=v1,v2,v3,v4,v5,5,SORT,POP,4,REV,POP,3,AVG,1000,*,283,/",
-			"CDEF:avg2PMtwo=v1,1000,*,283,/",
-#			"CDEF:avg2PMtwo=v1,v2,v3,v4,v5,5,SORT,POP,POP,3,REV,POP,POP"),		# Median over 5 values
-#			"LINE1:PMtwo#FFFF00:'PM2.5'",
-#			"LINE1:avg1PMtwo#FF0000:'PM2.5'",
-			"LINE1:avg2PMtwo#0000FF:'PM2.5'"
+			"CDEF:avgPMtwo=PMtwo,1000,*,283,/",
+			"LINE1:avgPMtwo#0000FF:'PM2.5'"
         	);
 	} elsif ($particle == 3) {
 	        RRDs::graph(
 		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
 			"DEF:PMone=data/data-sensor-".$sensor."-".$type.".rrd:PMone:AVERAGE:step=86400",
-			"CDEF:v1=PMone", "CDEF:v2=PREV(v1)", "CDEF:v3=PREV(v2)", "CDEF:v4=PREV(v3)", "CDEF:v5=PREV(v4)",
-#			"CDEF:avg1PMone=v1,v2,v3,3,SORT,POP,2,REV,POP",
-#			"CDEF:avg2PMone=v1,v2,v3,v4,v5,5,SORT,POP,4,REV,POP,3,AVG,1000,*,283,/",
-			"CDEF:avg2PMone=v1,1000,*,283,/",
-#			"CDEF:avg2PMone=v1,v2,v3,v4,v5,5,SORT,POP,POP,3,REV,POP,POP"),		# Median over 5 values
-			"LINE1:avg2PMone#FF0000:'PM1'",
-#			"LINE1:avg1PMone#FF0000:'PM1'",
-#			"LINE1:avg2PMone#FF0000:'PM1'"
+			"CDEF:avgPMone=PMone,1000,*,283,/",
+			"LINE1:avgPMone#FF0000:'PM1'",
         	);
 	} elsif ($particle == 4) {
 	        RRDs::graph(
 		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
 			"DEF:PMtwo=data/data-sensor-".$sensor."-".$type.".rrd:PMtwo:AVERAGE:step=86400",
-			"CDEF:v1=PMtwo", "CDEF:v2=PREV(v1)", "CDEF:v3=PREV(v2)", "CDEF:v4=PREV(v3)", "CDEF:v5=PREV(v4)",
-#			"CDEF:avg1PMtwo=v1,v2,v3,3,SORT,POP,2,REV,POP",
-#			"CDEF:avg2PMtwo=v1,v2,v3,v4,v5,5,SORT,POP,4,REV,POP,3,AVG,1000,*,283,/",
-			"CDEF:avg2PMtwo=v1,1000,*,283,/",
-#			"CDEF:avg2PMtwo=v1,v2,v3,v4,v5,5,SORT,POP,POP,3,REV,POP,POP"),		# Median over 5 values
+			"CDEF:avg2PMtwo=PMtwo,1000,*,283,/",
 			"LINE1:avg2PMtwo#0000FF:'PM2.5'",
-#			"LINE1:avg1PMtwo#FF0000:'PM2.5'",
-#			"LINE1:avg2PMtwo#FF0000:'PM2.5'"
         	);
 	} elsif ($particle == 5) {
 	        RRDs::graph(
@@ -141,18 +117,18 @@ foreach $daydir (@dirs_sorted) {
 				$dt = $dt;
 	                        if (($fields[6] < 0) || ($fields[8] > 15)) { $P1 = ''; } else { $P1 = $fields[6]; }
 	                        if (($fields[9] < 0) || ($fields[11] > 15)) { $P2 = ''; } else { $P2 = $fields[9]; }
-#				if (($P1 < 0) || ($ratioP1 > 20)) { $P1 = ''; }
-#				if (($P2 < 0) || ($ratioP2 > 20)) { $P2 = ''; }
-#				print $timestamp.' - '.$dt.' - '.$y.$m.$d.$h.$min.$sec."\n";
 				RRDs::update("data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "$dt\@$P1\:$P2");
 				my $ERR=RRDs::error;
 				print "ERROR while updating data/data-sensor-$sensor_name-$sensor_type.rrd: $ERR\n" if ($ERR && (index($ERR,"illegal attempt to update using time") == -1));
 			}
 		}
+
+		# create image dir per day
 		if (! -d "images/$y$m$d") {
 			mkdir "images/$y$m$d";
 		}
 	}
+
 	my ($ynew,$mnew,$dnew) = Add_Delta_Days($y,$m,$d,1);
 	my $newdate = sprintf("%04d%02d%02d",$ynew,$mnew,$dnew);
 	my @data_files = <data/data-sensor-*.rrd>;
