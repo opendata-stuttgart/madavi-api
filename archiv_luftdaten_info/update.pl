@@ -99,8 +99,6 @@ sub create_graph {
 
 my $daydir = "mirror/archive.luftdaten.info/".$ARGV[0];
 
-#print $daydir."\n";
-
 my @files_per_day = <$daydir/*.csv>;
 
 foreach my $file (@files_per_day) {
@@ -128,20 +126,22 @@ foreach my $file (@files_per_day) {
 
 	open (SENSORDATA, $file);
 
-	while (<SENSORDATA> && ($sensor_type eq "ppd42ns")) {
-		if (index($_,'sensor_id') == -1) {	
-			@fields = split(';',$_);
-#			($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = split(';',$_);
-			$timestamp = substr($fields[5],0,19);
-			($y,$m,$d,$h,$min,$sec) = ($timestamp =~ m/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
-			$dt = timegm($sec,$min,$h,$d,($m-1),$y);
-			$dt = $dt;
-			if (($fields[6] < 0) || ($fields[8] > 15)) { $P1 = ''; } else { $P1 = $fields[6]; }
-			if (($fields[9] < 0) || ($fields[11] > 15)) { $P2 = ''; } else { $P2 = $fields[9]; }
-#			print $timestamp.' - '.$dt.' - '.$y.$m.$d.$h.$min.$sec."\n";
-			RRDs::update("data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "$dt\@$P1\:$P2");
-			my $ERR=RRDs::error;
-			print "ERROR while updating data/data-sensor-$sensor_name-$sensor_type.rrd: $ERR\n" if ($ERR && (index($ERR,"illegal attempt to update using time") == -1));
+	if ($sensor_type eq "ppd42ns") {
+		while (<SENSORDATA>) {
+			if (index($_,'sensor_id') == -1) {	
+				@fields = split(';',$_);
+#				($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = split(';',$_);
+				$timestamp = substr($fields[5],0,19);
+				($y,$m,$d,$h,$min,$sec) = ($timestamp =~ m/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+				$dt = timegm($sec,$min,$h,$d,($m-1),$y);
+				$dt = $dt;
+				if (($fields[6] < 0) || ($fields[8] > 15)) { $P1 = ''; } else { $P1 = $fields[6]; }
+				if (($fields[9] < 0) || ($fields[11] > 15)) { $P2 = ''; } else { $P2 = $fields[9]; }
+#				print $timestamp.' - '.$dt.' - '.$y.$m.$d.$h.$min.$sec."\n";
+				RRDs::update("data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "$dt\@$P1\:$P2");
+				my $ERR=RRDs::error;
+				print "ERROR while updating data/data-sensor-$sensor_name-$sensor_type.rrd: $ERR\n" if ($ERR && (index($ERR,"illegal attempt to update using time") == -1));
+			}
 		}
 	}
 }

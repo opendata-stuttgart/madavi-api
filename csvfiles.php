@@ -5,6 +5,8 @@
 <?php
 if ($_GET['sensor']) {
 
+// view files (per date) for selected sensor
+
 	$sensor = $_GET['sensor'];
 
 	foreach (glob("data/data-$sensor-*.csv") as $filename) {
@@ -13,6 +15,8 @@ if ($_GET['sensor']) {
 	}
 
 } else {
+
+// view list of available sensors with saved data
 
 	$last_sensor = "";
 	foreach (glob("data/*.csv") as $filename) {
