@@ -52,9 +52,11 @@ if ($has_sds011) {
 	$update_string_sds011 = time().":";
 	if (isset($values["SDS_P1"])) {
 		$update_string_sds011 .= $values["SDS_P1"];
+		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["SDS_P2"];
 	} else {
 		$update_string_sds011 .= $values["P1"];
+		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["P2"];
 	}
 	print $update_string_sds011."\r\n";
@@ -63,6 +65,7 @@ if ($has_sds011) {
 if ($has_dht) {
 	$update_string_dht = time().":";
 	$update_string_dht .= $values["temperature"];
+	$update_string_dht .= ":";
 	$update_string_dht .= $values["humidity"];
 	print $update_string_dht."\r\n";
 }
