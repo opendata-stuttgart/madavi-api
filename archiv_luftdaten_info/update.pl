@@ -26,54 +26,103 @@ my $sensor_name;
 
 sub create_graph {
 	my ($output,$start,$title,$sensor,$type,$particle,$ymd) = @_;
+
+	if ($type eq 'ppd42ns') {
+		$unit1 = "Partikel / Liter ";
+		$unit2 = "Partikel / Liter";
+		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
+		$cdef1 = "CDEF:avgDSone=DSone,1000,*,283,/";
+		$cdef2 = "CDEF:avgDStwo=DStwo,1000,*,283,/";
+		$cdef3 = "CDEF:avgDSone=DSone,1000,*,283,/";
+		$cdef4 = "CDEF:avgDStwo=DStwo,1000,*,283,/";
+		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN,1000,*,283,/";
+		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN,1000,*,283,/";
+	} elsif ($type eq 'sds011') {
+		$unit1 = "µg / m³";
+		$unit2 = "µg / m³";
+		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
+		$cdef1 = "CDEF:avgDSone=DSone";
+		$cdef2 = "CDEF:avgDStwo=DStwo";
+		$cdef3 = "CDEF:avgDSone=DSone";
+		$cdef4 = "CDEF:avgDStwo=DStwo";
+		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN";
+		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN";
+	} elsif ($type eq 'dht22') {
+		$unit1 = "° Celsius";
+		$unit2 = "%";
+		$ds1 = "temperature"; $ds1_title = "Temperatur";
+		$ds2 = "humidity"; $ds2_title = "rel. Luftfeuchte";
+		$cdef1 = "CDEF:avgDSone=DSone";
+		$cdef2 = "CDEF:avgDStwo=DStwo";
+		$cdef3 = "CDEF:avgDSone=DSone";
+		$cdef4 = "CDEF:avgDStwo=DStwo";
+		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN";
+		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN";
+	} elsif ($type eq 'bmp180') {
+		$unit1 = "° Celsius";
+		$unit2 = "Pascal";
+		$ds1 = "temperature"; $ds1_title = "Temperatur";
+		$ds2 = "pressure"; $ds2_title = "Luftdruck";
+		$cdef1 = "CDEF:avgDSone=DSone";
+		$cdef2 = "CDEF:avgDStwo=DStwo";
+		$cdef3 = "CDEF:avgDSone=DSone";
+		$cdef4 = "CDEF:avgDStwo=DStwo";
+		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN";
+		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN";
+	}
+
+	@options = ();
+
+	@options = (
+		"--start", "e".$start,
+		"--end", "$ymd",
+		"--title=$title",
+		"--lower=0",
+		"-w 500",
+		"-h 250"
+	);
+
 	if ($particle == 1) {
-	        RRDs::graph(
-        	        $output, "--start", "e".$start, "--end", $ymd, "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-        	        "DEF:PMone=data/data-sensor-".$sensor."-".$type.".rrd:PMone:AVERAGE:step=30",
-			"CDEF:avgPMone=PMone,1000,*,283,/",
-			"LINE1:avgPMone#FF0000:'PM1'"
-		);
+		push @options, "--vertical-label=$unit1";
+		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=30";
+		push @options, $cdef1;
+		push @options, "LINE1:avgDSone#FF0000:$ds1_title";
 	} elsif ($particle == 2) {
-	        RRDs::graph(
-		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-			"DEF:PMtwo=data/data-sensor-".$sensor."-".$type.".rrd:PMtwo:AVERAGE:step=30",
-			"CDEF:avgPMtwo=PMtwo,1000,*,283,/",
-			"LINE1:avgPMtwo#FF0000:'PM2.5'"
-        	);
+		push @options, "--vertical-label=$unit2";
+		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=30";
+		push @options, $cdef2;
+		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
 	} elsif ($particle == 3) {
-	        RRDs::graph(
-		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-			"DEF:PMone=data/data-sensor-".$sensor."-".$type.".rrd:PMone:AVERAGE:step=86400",
-			"CDEF:avgPMone=PMone,1000,*,283,/",
-			"LINE1:avgPMone#0000FF:'PM1'",
-        	);
+		push @options, "--vertical-label=$unit1";
+		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=86400";
+		push @options, $cdef3;
+		push @options, "LINE1:avgDSone#FF0000:$ds1_title";
 	} elsif ($particle == 4) {
-	        RRDs::graph(
-		        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-			"DEF:PMtwo=data/data-sensor-".$sensor."-".$type.".rrd:PMtwo:AVERAGE:step=86400",
-			"CDEF:avgPMtwo=PMtwo,1000,*,283,/",
-			"LINE1:avgPMtwo#0000FF:'PM2.5'",
-        	);
-        } elsif ($particle == 5) {
-                RRDs::graph(
-                        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-                        "DEF:PMone=data/data-sensor-".$sensor."-".$type.".rrd:PMone:AVERAGE:step=30",
-                        "CDEF:avgPMone=PMone,86400,TRENDNAN",                                  # 24h average
-                        "LINE1:avgPMone#0000FF:'PM1'",
-                );
-        } elsif ($particle == 6) {
-                RRDs::graph(
-                        $output, "--start", "e".$start, "--end", "$ymd", "--title=$title", "--vertical-label=Partikel / Liter", "--lower=0", "-w 500", "-h 250",
-                        "DEF:PMtwo=data/data-sensor-".$sensor."-".$type.".rrd:PMtwo:AVERAGE:step=30",
-                        "CDEF:avgPMtwo=PMtwo,86400,TRENDNAN",                                  # 24h average
-                        "LINE1:avgPMtwo#0000FF:'PM2.5'",
-                );
-        }
-        my $ERR=RRDs::error;
-        print "ERROR while creating graph: $ERR\n" if $ERR;
+		push @options, "--vertical-label=$unit2";
+		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=86400";
+		push @options, $cdef4;
+		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
+	} elsif ($particle == 5) {
+		push @options, "--vertical-label=$unit1";
+		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=30";
+		push @options, $cdef5;
+		push @options, "LINE1:avgDSone#0000FF:$ds1_title";
+	} elsif ($particle == 6) {
+		push @options, "--vertical-label=$unit2";
+		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=30";
+		push @options, $cdef6;
+		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
+	}
+	RRDs::graph($output,@options);
+	my $ERR=RRDs::error;
+	print "ERROR while creating graph: $ERR\n" if $ERR;
 }
 
 my $daydir = "mirror/archive.luftdaten.info/".$ARGV[0];
+
+print $daydir."\n";
 
 my @files_per_day = <$daydir/*.csv>;
 
@@ -87,10 +136,24 @@ foreach my $file (@files_per_day) {
 	$sensor_type = $nameparts[1];
 	$sensor_name = $nameparts[3];
 
-	if (($sensor_type eq "ppd42ns") && (! -f 'data/data-sensor-'.$sensor_name.'-'.$sensor_type.'.rrd')) {
+	if ($sensor_type eq "ppd42ns") {
+		$dataset_1 = "DS:PMone:GAUGE:300:U:U";
+		$dataset_2 = "DS:PMtwo:GAUGE:300:U:U";
+	} elsif ($sensor_type eq "ssd011") {
+		$dataset_1 = "DS:PMone:GAUGE:300:U:U";
+		$dataset_2 = "DS:PMtwo:GAUGE:300:U:U";
+	} elsif ($sensor_type eq "dht22") {
+		$dataset_1 = "DS:temperature:GAUGE:300:U:U";
+		$dataset_2 = "DS:humidity:GAUGE:300:U:U";
+	} elsif ($sensor_type eq "bmp180") {
+		$dataset_1 = "DS:temperature:GAUGE:300:U:U";
+		$dataset_2 = "DS:pressure:GAUGE:300:U:U";
+	}
+
+	if (! -f 'data/data-sensor-'.$sensor_name.'-'.$sensor_type.'.rrd') {
 		RRDs::create(
 			"data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "--step=30", "--start=946684800",
-			"DS:PMone:GAUGE:300:U:U", "DS:PMtwo:GAUGE:300:U:U",
+			$dataset_1, $dataset_2,
 			"RRA:AVERAGE:0,99999:1:92160", "RRA:AVERAGE:0,99999:30:35136", "RRA:AVERAGE:0,99999:720:14640",
 		);
 		my $ERR=RRDs::error;
@@ -99,18 +162,27 @@ foreach my $file (@files_per_day) {
 
 	open (SENSORDATA, $file);
 
-	if ($sensor_type eq "ppd42ns") {
-		while (<SENSORDATA>) {
-			if (index($_,'sensor_id') == -1) {	
-				@fields = split(';',$_);
-#				($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = split(';',$_);
-				$timestamp = substr($fields[5],0,19);
-				($y,$m,$d,$h,$min,$sec) = ($timestamp =~ m/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
-				$dt = timegm($sec,$min,$h,$d,($m-1),$y);
-				$dt = $dt;
-				if (($fields[6] < 0) || ($fields[8] > 15)) { $P1 = ''; } else { $P1 = $fields[6]; }
-				if (($fields[9] < 0) || ($fields[11] > 15)) { $P2 = ''; } else { $P2 = $fields[9]; }
-				RRDs::update("data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "$dt\@$P1\:$P2");
+	while (<SENSORDATA>) {
+		if (index($_,'sensor_id') == -1) {	
+			chomp($_);
+			@fields = split(';',$_);
+#			($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = split(';',$_);
+			$timestamp = substr($fields[5],0,19);
+			($y,$m,$d,$h,$min,$sec) = ($timestamp =~ m/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+			$dt = timegm($sec,$min,$h,$d,($m-1),$y);
+			$data1 = ''; $data2 = '';
+			if ($sensor_type eq "ppd42ns") {
+				if (($fields[6] > 0) && ($fields[8] < 15)) { $data1 = $fields[6]; }
+				if (($fields[9] > 0) && ($fields[11] < 15)) { $data2 = $fields[9]; }
+			} elsif ($sensor_type eq "sds011") {
+			} elsif ($sensor_type eq "dht22") {
+				$data1 = $fields[6];
+				$data2 = $fields[7];
+			} elsif ($sensor_type eq "bmp180") {
+			}
+			if (($data1 ne '') && ($data2 ne '')) {
+#				print "data/data-sensor-".$sensor_name."-".$sensor_type.".rrd"." - "."$dt\@$data1\:$data2"."\n";
+				RRDs::update("data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "$dt\@$data1\:$data2");
 				my $ERR=RRDs::error;
 				print "ERROR while updating data/data-sensor-$sensor_name-$sensor_type.rrd: $ERR\n" if ($ERR && (index($ERR,"illegal attempt to update using time") == -1));
 			}
@@ -125,7 +197,7 @@ if (! -d "images/$y$m$d") {
 
 my ($ynew,$mnew,$dnew) = Add_Delta_Days($y,$m,$d,1);
 my $newdate = sprintf("%04d%02d%02d",$ynew,$mnew,$dnew);
-my @data_files = <data/data-sensor-*-ppd42ns.rrd>;
+my @data_files = <data/data-sensor-*.rrd>;
 foreach $data_sensor (@data_files) {
 	$data_sensor = substr($data_sensor,0,-4);
 	@nameparts = split("-",$data_sensor);

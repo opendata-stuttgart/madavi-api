@@ -1,0 +1,2 @@
+#!/bin/sh
+strings ./data/latest.bin|grep ^NRZ-
