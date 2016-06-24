@@ -32,9 +32,11 @@ $sensorplaces[76] = 'Dürrlewang';
 $sensorplaces[77] = 'Dürrlewang';
 $sensorplaces[81] = 'Mainhardt';
 $sensorplaces[82] = 'Nähe Schwab-/Bebelstraße';
+$sensorplaces[94] = 'Berkheim';
 $sensorplaces[95] = 'Berkheim';
 $sensorplaces[105] = 'Pragsattel';
 $sensorplaces[106] = 'Ostritz (bei Görlitz/Sachsen)';
+$sensorplaces[120] = 'Metzingen';
 
 if (isset($_GET['day'])) {
 	$imgpath="images/".$_GET['day'];
@@ -66,7 +68,7 @@ if ($_GET['sensor']) {
         print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/sensor-".$sensor."-*-1-day.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table>
@@ -106,7 +108,7 @@ if ($_GET['sensor']) {
         print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-day.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
@@ -128,7 +130,7 @@ if ($_GET['sensor']) {
         print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-week.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
@@ -154,7 +156,7 @@ if ($_GET['sensor']) {
         }
 
 	foreach (glob($imgpath."/*-1-24-hour-week.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
@@ -182,7 +184,7 @@ if ($_GET['sensor']) {
 	}
 
 	foreach (glob($imgpath."/*-1-24-hour-float.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
@@ -206,7 +208,7 @@ if ($_GET['sensor']) {
         print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-month.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
@@ -228,7 +230,7 @@ if ($_GET['sensor']) {
         print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-year.png") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
 		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
@@ -240,7 +242,7 @@ if ($_GET['sensor']) {
 } else {
 
 	foreach (glob("data/*.rrd") as $filename) {
-		$id_from_file=split("-",$filename);
+		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[2];
 		$sensor_type = substr($id_from_file[3],0,-4);
 		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a><br />\n";
