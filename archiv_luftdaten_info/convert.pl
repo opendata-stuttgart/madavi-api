@@ -34,10 +34,10 @@ sub create_graph {
 	my ($output,$start,$title,$sensor,$type,$particle,$ymd) = @_;
 	
 	if ($type eq 'ppd42ns') {
-                $unit1 = "Partikel / Liter ";
-                $unit2 = "Partikel / Liter";
-                $ds1 = "PMone"; $ds1_title = "PM1";
-                $ds2 = "PMtwo"; $ds2_title = "PM2.5";
+		$unit1 = "Partikel / Liter ";
+		$unit2 = "Partikel / Liter";
+		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
 		$cdef1 = "CDEF:avgDSone=DSone,1000,*,283,/";
 		$cdef2 = "CDEF:avgDStwo=DStwo,1000,*,283,/";
 		$cdef3 = "CDEF:avgDSone=DSone,1000,*,283,/";
@@ -45,10 +45,10 @@ sub create_graph {
 		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN,1000,*,283,/";
 		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN,1000,*,283,/";
 	} elsif ($type eq 'sds011') {
-                $unit1 = "µg / m³";
-                $unit2 = "µg / m³";
-                $ds1 = "PMone"; $ds1_title = "PM1";
-                $ds2 = "PMtwo"; $ds2_title = "PM2.5";
+		$unit1 = "µg / m³";
+		$unit2 = "µg / m³";
+		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
 		$cdef1 = "CDEF:avgDSone=DSone";
 		$cdef2 = "CDEF:avgDStwo=DStwo";
 		$cdef3 = "CDEF:avgDSone=DSone";
@@ -56,10 +56,10 @@ sub create_graph {
 		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN";
 		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN";
 	} elsif ($type eq 'dht22') {
-                $unit1 = "° Celsius";
-                $unit2 = "%";
-                $ds1 = "temperature"; $ds1_title = "Temperatur";
-                $ds2 = "humidity"; $ds2_title = "rel. Luftfeuchte";
+		$unit1 = "° Celsius";
+		$unit2 = "%";
+		$ds1 = "temperature"; $ds1_title = "Temperatur";
+		$ds2 = "humidity"; $ds2_title = "rel. Luftfeuchte";
 		$cdef1 = "CDEF:avgDSone=DSone";
 		$cdef2 = "CDEF:avgDStwo=DStwo";
 		$cdef3 = "CDEF:avgDSone=DSone";
@@ -67,10 +67,10 @@ sub create_graph {
 		$cdef5 = "CDEF:avgDSone=DSone,86400,TRENDNAN";
 		$cdef6 = "CDEF:avgDStwo=DStwo,86400,TRENDNAN";
 	} elsif ($type eq 'bmp180') {
-                $unit1 = "° Celsius";
-                $unit2 = "Pascal";
-                $ds1 = "temperature"; $ds1_title = "Temperatur";
-                $ds2 = "pressure"; $ds2_title = "Luftdruck";
+		$unit1 = "° Celsius";
+		$unit2 = "Pascal";
+		$ds1 = "temperature"; $ds1_title = "Temperatur";
+		$ds2 = "pressure"; $ds2_title = "Luftdruck";
 		$cdef1 = "CDEF:avgDSone=DSone";
 		$cdef2 = "CDEF:avgDStwo=DStwo";
 		$cdef3 = "CDEF:avgDSone=DSone";
@@ -122,8 +122,8 @@ sub create_graph {
 		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
 	}
 	RRDs::graph($output,@options);
-        my $ERR=RRDs::error;
-        print "ERROR while creating graph: $ERR\n" if $ERR;
+	my $ERR=RRDs::error;
+	print "ERROR while creating graph: $ERR\n" if $ERR;
 }
 
 foreach $daydir (@dirs_sorted) {
@@ -178,12 +178,12 @@ foreach $daydir (@dirs_sorted) {
 				$dt = timegm($sec,$min,$h,$d,($m-1),$y);
 				$data1 = ''; $data2 = '';
 				if ($sensor_type eq "ppd42ns") {
-		                        if (($fields[6] > 0) && ($fields[8] < 15)) { $data1 = $fields[6]; }
-		                        if (($fields[9] > 0) && ($fields[11] < 15)) { $data2 = $fields[9]; }
+					if (($fields[6] > 0) && ($fields[8] < 15)) { $data1 = $fields[6]; }
+					if (($fields[9] > 0) && ($fields[11] < 15)) { $data2 = $fields[9]; }
 				} elsif ($sensor_type eq "sds011") {
 				} elsif ($sensor_type eq "dht22") {
-		                        $data1 = $fields[6];
-		                        $data2 = $fields[7];
+					$data1 = $fields[6];
+					$data2 = $fields[7];
 				} elsif ($sensor_type eq "bmp180") {
 				}
 				if (($data1 ne '') && ($data2 ne '')) { 

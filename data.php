@@ -15,24 +15,27 @@ foreach ($results["sensordatavalues"] as $sensordatavalues) {
 
 // check for used sensors
 if (isset($values["durP1"]) && isset($values["durP2"])) { $has_ppd42ns = 1; } else { $has_ppd42ns = 0; }
-if ((! isset($values["durP1"])) && isset($values["P1"])) { $has_sds011 = 1; } else { $has_sds011 = 0; }
-if (isset($values["SDS_P1"]) && isset($values["SDS_P2"])) { $has_sds011 = 1; } else { $has_sds011 = 0; }
+if (((! isset($values["durP1"])) && isset($values["P1"])) || (isset($values["SDS_P1"]) && isset($values["SDS_P2"]))) { $has_sds011 = 1; } else { $has_sds011 = 0; }
 if (isset($values["temperature"]) && isset($values["humidity"])) { $has_dht = 1; } else { $has_dht = 0; }
 if (isset($values["BMP_temperature"]) && isset($values["BMP_pressure"])) { $has_bmp = 1; } else { $has_bmp = 0; }
 
 // print transmitted values
-print "Sensor: ".$headers['Sensor']."\r\n";
-if (isset($values["P1"])) print "P1: ".$values["P1"]."\r\n";
-if (isset($values["P2"])) print "P2: ".$values["P2"]."\r\n";
-if (isset($values["temperature"])) print "DHT temp.: ".$values["temperature"]."\r\n";
-if (isset($values["humidity"])) print "DHT humidity: ".$values["humidity"]."\r\n";
-if (isset($values["BMP_pressure"])) print "BMP pressure: ".$values["BMP_pressure"]."\r\n";
-if (isset($values["BMP_temperature"])) print "BMP temp.: ".$values["BMP_temperature"]."\r\n";
-if (isset($values["SDS_P1"])) print "SDS_P1: ".$values["SDS_P1"]."\r\n";
-if (isset($values["SDS_P2"])) print "SDS_P2: ".$values["SDS_P2"]."\r\n";
-if (isset($values["samples"])) print "Samples: ".$values["samples"]."\r\n";
-if (isset($values["min_micro"])) print "Min cycle: ".$values["min_micro"]."\r\n";
-if (isset($values["max_micro"])) print "Max cycle: ".$values["max_micro"]."\r\n";
+echo "Sensor: ".$headers['Sensor']."\r\n";
+if (isset($values["P1"])) echo "P1: ".$values["P1"]."\r\n";
+if (isset($values["P2"])) echo "P2: ".$values["P2"]."\r\n";
+if (isset($values["temperature"])) echo "DHT temp.: ".$values["temperature"]."\r\n";
+if (isset($values["humidity"])) echo "DHT humidity: ".$values["humidity"]."\r\n";
+if (isset($values["BMP_pressure"])) echo "BMP pressure: ".$values["BMP_pressure"]."\r\n";
+if (isset($values["BMP_temperature"])) echo "BMP temp.: ".$values["BMP_temperature"]."\r\n";
+if (isset($values["SDS_P1"])) echo "SDS_P1: ".$values["SDS_P1"]."\r\n";
+if (isset($values["SDS_P2"])) echo "SDS_P2: ".$values["SDS_P2"]."\r\n";
+if (isset($values["samples"])) echo "Samples: ".$values["samples"]."\r\n";
+if (isset($values["min_micro"])) echo "Min cycle: ".$values["min_micro"]."\r\n";
+if (isset($values["max_micro"])) echo "Max cycle: ".$values["max_micro"]."\r\n";
+if ($has_ppd42ns) echo "Daten von PPD42NS gesendet.\r\n";
+if ($has_sds011) echo "Daten von SDS011 gesendet.\r\n";
+if ($has_dht) echo "Daten von DHT gesendet.\r\n";
+if ($has_bmp) echo "Daten von BMP gesendet.\r\n";
 
 // check if data dir exists, create if not
 if (!file_exists('data')) {
@@ -46,7 +49,7 @@ if ($has_ppd42ns) {
 	if ($values["ratioP1"] < 15) { $update_string_ppd42ns .= $values["P1"]; }
 	$update_string_ppd42ns .= ":";
 	if ($values["ratioP2"] < 15) { $update_string_ppd42ns .= $values["P2"]; }
-	print $update_string_ppd42ns."\r\n";
+	echo $update_string_ppd42ns."\r\n";
 }
 
 if ($has_sds011) {
@@ -60,7 +63,7 @@ if ($has_sds011) {
 		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["P2"];
 	}
-	print $update_string_sds011."\r\n";
+	echo $update_string_sds011."\r\n";
 }
 
 if ($has_dht) {
@@ -68,7 +71,7 @@ if ($has_dht) {
 	$update_string_dht .= $values["temperature"];
 	$update_string_dht .= ":";
 	$update_string_dht .= $values["humidity"];
-	print $update_string_dht."\r\n";
+	echo $update_string_dht."\r\n";
 }
 
 if ($has_bmp) {
@@ -76,7 +79,7 @@ if ($has_bmp) {
 	$update_string_bmp .= $values["BMP_temperature"];
 	$update_string_bmp .= ":";
 	$update_string_bmp .= $values["BMP_pressure"];
-	print $update_string_bmp."\r\n";
+	echo $update_string_bmp."\r\n";
 }
 
 // update ppd42ns rrd file

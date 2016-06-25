@@ -46,7 +46,7 @@ if (isset($_GET['day'])) {
 	$daystr = "&day=".date("Ymd",mktime(0,0,0, date("m"),date("d")-1,date("Y")));
 }
 
-print "<a href='graph.php?showday$daystr'>über einen Tag</a>
+echo "<a href='graph.php?showday$daystr'>über einen Tag</a>
  - <a href='graph.php?showweek$daystr'>über eine Woche</a>
  - <a href='graph.php?showmonth$daystr'>über einen Monat</a>
  - <a href='graph.php?showyear$daystr'>über ein Jahr</a>
@@ -57,21 +57,21 @@ if ($_GET['sensor']) {
 
 	$sensor = $_GET['sensor'];
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='sensor' value='".$sensor."'> Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='sensor' value='".$sensor."'> Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/sensor-".$sensor."-*-1-day.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table>
+		echo "<table>
 		<tr><td colspan='2'>".$sensor." (".$sensorplaces[$sensor].")</td></tr>
 		<tr>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-day.png' alt='Generated RRD image'></td>
@@ -97,21 +97,21 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['showday'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='showday' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='showday' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-day.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-day.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-day.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";
@@ -119,21 +119,21 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['showweek'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='showweek' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='showweek' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-week.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-week.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-week.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";
@@ -141,25 +141,25 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['show24h'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='show24h' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='show24h' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
-        if (file_exists($imgpath."/pm10-tmw.png")) {
-                print "24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-tmw.png' /><br /><br />";
-        }
+	if (file_exists($imgpath."/pm10-tmw.png")) {
+		echo "24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-tmw.png' /><br /><br />";
+	}
 
 	foreach (glob($imgpath."/*-1-24-hour-week.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
 		- <a href='#' onclick='show_only(".$sensor."); return false;'>nur diesen Sensor zeigen</a>
 		</td></tr>
 		<tr name='graphrow' id='sensor_".$sensor."'><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-24-hour-week.png' alt='Generated RRD image'></td>
@@ -169,25 +169,25 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['showfloat'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='showfloat' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='showfloat' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	if (file_exists($imgpath."/pm10-gtmw.png")) {
-		print "Gleitender 24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-gtmw.png' /><br /><br />";
+		echo "Gleitender 24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-gtmw.png' /><br /><br />";
 	}
 
 	foreach (glob($imgpath."/*-1-24-hour-float.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
 		- <a href='#' onclick='show_only(".$sensor."); return false;'>nur diesen Sensor zeigen</a>
 		</td></tr>
 		<tr name ='graphrow' id='sensor_".$sensor."'><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-24-hour-float.png' alt='Generated RRD image'></td>
@@ -197,21 +197,21 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['showmonth'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='showmonth' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='showmonth' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-month.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-month.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-month.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";
@@ -219,21 +219,21 @@ if ($_GET['sensor']) {
 
 } elseif (isset($_GET['showyear'])) {
 
-	print "<form method='GET' action='graph.php'><input type='hidden' name='showyear' value=''>Datum: <select name='day'>";
-        foreach (glob("images/2*") as $dirname) {
+	echo "<form method='GET' action='graph.php'><input type='hidden' name='showyear' value=''>Datum: <select name='day'>";
+	foreach (glob("images/2*") as $dirname) {
 		$isactive = "";
 		if ($daystr == "&day=".substr($dirname,7)) {
 			$isactive = " selected='selected'";
 		}
-                print "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
-        }
-        print "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
+		echo "<option value='".substr($dirname,7)."'".$isactive.">".substr($dirname,13,2).".".substr($dirname,11,2).".".substr($dirname,7,4)."</option>\n";
+	}
+	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
 	foreach (glob($imgpath."/*-1-year.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		print "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".sensor_type."-1-year.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-year.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";

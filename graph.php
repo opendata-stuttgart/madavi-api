@@ -36,10 +36,10 @@ if (!file_exists('images')) {
 	mkdir('images', 0755, true);
 }
 
-if ($_GET['sensor']) {
+if (isset($_GET['sensor'])) {
 
 	if (!file_exists('data/data-'.$_GET['sensor'].'-highres.rrd')) {
-                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+		header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
 		echo "<h2>Sensor nicht gefunden.</h2>";
 	} else {
 		$sensor = $_GET['sensor'];
@@ -90,7 +90,9 @@ if ($_GET['sensor']) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (".$sensorplaces[$sensor].")<br />\n";
+		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
+		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
+		echo ")<br />\n";
 		create_graph("images/sensor-".$sensor."-1-day.png", "-1d", "Sensor data over one day (high res)",$sensor,1);
 		create_graph("images/sensor-".$sensor."-25-day.png", "-1d", "Sensor data over one day (high res)",$sensor,25);
 		echo "<img src='images/sensor-".$sensor."-1-day.png' alt='Sensor data over one day'>
@@ -101,7 +103,9 @@ if ($_GET['sensor']) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (".$sensorplaces[$sensor].")<br />\n";
+		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
+		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
+		echo ")<br />\n";
 		create_graph("images/sensor-".$sensor."-1-week.png", "-1w", "Sensor data over one week",$sensor,1);
 		create_graph("images/sensor-".$sensor."-25-week.png", "-1w", "Sensor data over one week",$sensor,25);
 		echo "<img src='images/sensor-".$sensor."-1-week.png' alt='Sensor data over one week'>
@@ -112,7 +116,9 @@ if ($_GET['sensor']) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (".$sensorplaces[$sensor].")<br />\n";
+		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
+		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
+		echo ")<br />\n";
 		create_graph("images/sensor-".$sensor."-1-month.png", "-1m", "Sensor data over one month",$sensor,1);
 		create_graph("images/sensor-".$sensor."-25-month.png", "-1m", "Sensor data over one month",$sensor,25);
 		echo "<img src='images/sensor-".$sensor."-1-month.png' alt='Sensor data over one month'>
@@ -123,7 +129,9 @@ if ($_GET['sensor']) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (".$sensorplaces[$sensor].")<br />\n";
+		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
+		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
+		echo ")<br />\n";
 		create_graph("images/sensor-".$sensor."-1-floating.png", "-8d", "Floating 24h average over 7 days",$sensor,101);
 		create_graph("images/sensor-".$sensor."-25-floating.png", "-8d", "Floating 24h average over 7 days",$sensor,125);
 		echo "<img src='images/sensor-".$sensor."-1-floating.png' alt='Floating 24h average over 7 days'>
@@ -134,7 +142,9 @@ if ($_GET['sensor']) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (".$sensorplaces[$sensor].")<br />\n";
+		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
+		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
+		echo ")<br />\n";
 	}
 
 }
