@@ -134,10 +134,10 @@ foreach $daydir (@dirs_sorted) {
 
 	foreach my $file (@files_per_day) {
 
-		@dirparts = explode("/",$file);
+		@dirparts = split("/",$file);
 		$filename = $dirparts[3];
 		$filename = substr($filename,0,-4);
-		@nameparts = explode("_",$filename);
+		@nameparts = split("_",$filename);
 		$sensor_date = $nameparts[0];
 		$sensor_type = $nameparts[1];
 		$sensor_name = $nameparts[3];
@@ -171,8 +171,8 @@ foreach $daydir (@dirs_sorted) {
 		while (<SENSORDATA>) {
 			if (index($_,'sensor_id') == -1) {
 				chomp($_);	
-				@fields = explode(';',$_);
-#				($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = explode(';',$_);
+				@fields = split(';',$_);
+#				($sensor_id,$sensor_type,$location,$lat,$lon,$timestamp,$P1,$durP1,$ratioP1,$P2,$durP2,$ratioP2) = split(';',$_);
 				$timestamp = substr($fields[5],0,19);
 				($y,$m,$d,$h,$min,$sec) = ($timestamp =~ m/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
 				$dt = timegm($sec,$min,$h,$d,($m-1),$y);
@@ -206,7 +206,7 @@ foreach $daydir (@dirs_sorted) {
 	my @data_files = <data/data-sensor-*.rrd>;
 	foreach $data_sensor (@data_files) {
 		$data_sensor = substr($data_sensor,0,-4);
-		@nameparts = explode("-",$data_sensor);
+		@nameparts = split("-",$data_sensor);
 		$sensor_name=$nameparts[2];
 		$sensor_type=$nameparts[3];
 		create_graph("images/$y$m$d/sensor-$sensor_name-$sensor_type-1-day.png", "-1d", "Sensor data over one day", $sensor_name,$sensor_type,1,"$newdate");
