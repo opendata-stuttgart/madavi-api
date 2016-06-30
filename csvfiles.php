@@ -18,6 +18,8 @@ if ($_GET['sensor']) {
 
 // view list of available sensors with saved data
 
+	echo "<a href='get_zip.php'>Alle Daten als Zip-Datei</a><br /><br />\n";
+
 	$last_sensor = "";
 	foreach (glob("data/*.csv") as $filename) {
 		$sensor = substr($filename,10,-15);
