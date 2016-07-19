@@ -159,7 +159,7 @@ function create_graph($output, $start, $title, $sensor, $option_nr) {
 	} else if (strpos($sensor,"sds011")) {
 		$unit1 = "µg / m³";
 		$unit2 = "µg / m³";
-		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds1 = "PMone"; $ds1_title = "PM10";
 		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
 	} else if (strpos($sensor,"dht")) {
 		$unit1 = "° Celsius";
