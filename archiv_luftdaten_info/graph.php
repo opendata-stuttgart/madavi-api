@@ -17,6 +17,30 @@ function show_only(sensor) {
 		}
 	}
 }
+function filter_type(type) {
+        var graphs = document.getElementsByName("graphtable");
+        for (var i=0; i< graphs.length; i++) {
+                if (graphs[i].id.indexOf(type) == -1) {
+                        graphs[i].className = 'hidden';
+                } else {
+                        graphs[i].className = '';
+                }
+        }
+}
+function show_all() {
+        var graphs = document.getElementsByName("graphtable");
+        for (var i=0; i< graphs.length; i++) {
+                graphs[i].className = '';
+        }
+        var graphs = document.getElementsByName("graphrow");
+        for (var i=0; i< graphs.length; i++) {
+                graphs[i].className = '';
+        }
+        var graphs = document.getElementsByName("graphrowlinebreak");
+        for (var i=0; i< graphs.length; i++) {
+                graphs[i].className = '';
+        }
+}
 </script>
 </head>
 <body>
@@ -32,11 +56,18 @@ $sensorplaces[76] = 'Dürrlewang';
 $sensorplaces[77] = 'Dürrlewang';
 $sensorplaces[81] = 'Mainhardt';
 $sensorplaces[82] = 'Nähe Schwab-/Bebelstraße';
+$sensorplaces[92] = 'Leonberg';
 $sensorplaces[94] = 'Berkheim';
 $sensorplaces[95] = 'Berkheim';
 $sensorplaces[105] = 'Pragsattel';
 $sensorplaces[106] = 'Ostritz (bei Görlitz/Sachsen)';
 $sensorplaces[120] = 'Metzingen';
+$sensorplaces[140] = 'Stuttgart West';
+$sensorplaces[142] = 'Heumaden';
+$sensorplaces[146] = 'Stuttgart, Pragsattel';
+$sensorplaces[147] = 'Stuttgart, Pragsattel';
+$sensorplaces[149] = 'Stuttgart, Pragsattel';
+$sensorplaces[151] = 'Stuttgart, Ehrenhalde';
 
 if (isset($_GET['day'])) {
 	$imgpath="images/".$_GET['day'];
@@ -111,7 +142,7 @@ if ($_GET['sensor']) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table name='graphtable' id='table_".$sensor."'><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-day.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-day.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";
@@ -133,7 +164,7 @@ if ($_GET['sensor']) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
+		echo "<table name='graphtable' id='table_".$sensor."'><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a></td></tr>
 		<tr><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-week.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-week.png' alt='Generated RRD image'></td></tr>
 		</table><br /><br />";
@@ -155,16 +186,22 @@ if ($_GET['sensor']) {
 		echo "24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-tmw.png' /><br /><br />";
 	}
 
+        echo "Filter: <a href='#' onclick='filter_type(\"sds\");return false;'>SDS</a> -
+<a href='#' onclick='filter_type(\"ppd42ns\");return false;'>ppd42ns</a> -
+<a href='#' onclick='filter_type(\"dht\");return false;'>DHT</a> | <a href='#' onclick='show_all();return false;'>Alle wieder anzeigen</a>
+<br /><br />
+";
 	foreach (glob($imgpath."/*-1-24-hour-week.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
+		echo "<table name='graphtable' id='table_".$sensor."_".$sensor_type."'><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
 		- <a href='#' onclick='show_only(".$sensor."); return false;'>nur diesen Sensor zeigen</a>
 		</td></tr>
 		<tr name='graphrow' id='sensor_".$sensor."'><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-24-hour-week.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-24-hour-week.png' alt='Generated RRD image'></td></tr>
-		</table><span name='graphrowlinebreak'><br /><br /></span>";
+		<tr name='graphrowlinebreak'><td colspan='2'><br /></td></tr>
+		</table>";
 	}
 
 } elseif (isset($_GET['showfloat'])) {
@@ -183,16 +220,22 @@ if ($_GET['sensor']) {
 		echo "Gleitender 24-h-Mittelwert am Neckartor<br /><img src='".$imgpath."/pm10-gtmw.png' /><br /><br />";
 	}
 
+        echo "Filter: <a href='#' onclick='filter_type(\"sds\");return false;'>SDS</a> -
+<a href='#' onclick='filter_type(\"ppd42ns\");return false;'>ppd42ns</a> -
+<a href='#' onclick='filter_type(\"dht\");return false;'>DHT</a> | <a href='#' onclick='show_all();return false;'>Alle wieder anzeigen</a>
+<br /><br />
+";
 	foreach (glob($imgpath."/*-1-24-hour-float.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
 		$sensor_type = $id_from_file[2];
-		echo "<table><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
+		echo "<table name='graphtable' id='table_".$sensor."_".$sensor_type."'><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor." - ".$sensor_type." (".$sensorplaces[$sensor].")</a>
 		- <a href='#' onclick='show_only(".$sensor."); return false;'>nur diesen Sensor zeigen</a>
 		</td></tr>
 		<tr name ='graphrow' id='sensor_".$sensor."'><td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-1-24-hour-float.png' alt='Generated RRD image'></td>
 		<td><img src='$imgpath/sensor-".$sensor."-".$sensor_type."-25-24-hour-float.png' alt='Generated RRD image'></td></tr>
-		</table><span name='graphrowlinebreak'><br /><br /></span>";
+		<tr name='graphrowlinebreak'><td colspan='2'><br /></td></tr>
+		</table>";
 	}
 
 } elseif (isset($_GET['showmonth'])) {
@@ -207,6 +250,11 @@ if ($_GET['sensor']) {
 	}
 	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
+        echo "Filter: <a href='#' onclick='filter_type(\"sds\");return false;'>SDS</a> -
+<a href='#' onclick='filter_type(\"ppd42ns\");return false;'>ppd42ns</a> -
+<a href='#' onclick='filter_type(\"dht\");return false;'>DHT</a> | <a href='#' onclick='show_all();return false;'>Alle wieder anzeigen</a>
+<br /><br />
+";
 	foreach (glob($imgpath."/*-1-month.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];
@@ -229,6 +277,11 @@ if ($_GET['sensor']) {
 	}
 	echo "</select> <input type='submit' name='Senden' value='Auswählen'><br /><br />";
 
+	echo "Filter: <a href='#' onclick='filter_type(\"sds\");return false;'>SDS</a> -
+<a href='#' onclick='filter_type(\"ppd42ns\");return false;'>ppd42ns</a> -
+<a href='#' onclick='filter_type(\"dht\");return false;'>DHT</a> | <a href='#' onclick='show_all();return false;'>Alle wieder anzeigen</a>
+<br /><br />
+";
 	foreach (glob($imgpath."/*-1-year.png") as $filename) {
 		$id_from_file=explode("-",$filename);
 		$sensor = $id_from_file[1];

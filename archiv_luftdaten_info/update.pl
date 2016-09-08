@@ -41,7 +41,7 @@ sub create_graph {
 	} elsif ($type eq 'sds011') {
 		$unit1 = "µg / m³";
 		$unit2 = "µg / m³";
-		$ds1 = "PMone"; $ds1_title = "PM1";
+		$ds1 = "PMone"; $ds1_title = "PM10";
 		$ds2 = "PMtwo"; $ds2_title = "PM2.5";
 		$cdef1 = "CDEF:avgDSone=DSone";
 		$cdef2 = "CDEF:avgDStwo=DStwo";
@@ -86,12 +86,12 @@ sub create_graph {
 
 	if ($particle == 1) {
 		push @options, "--vertical-label=$unit1";
-		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=30";
+		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=60";
 		push @options, $cdef1;
 		push @options, "LINE1:avgDSone#FF0000:$ds1_title";
 	} elsif ($particle == 2) {
 		push @options, "--vertical-label=$unit2";
-		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=30";
+		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=60";
 		push @options, $cdef2;
 		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
 	} elsif ($particle == 3) {
@@ -106,12 +106,12 @@ sub create_graph {
 		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
 	} elsif ($particle == 5) {
 		push @options, "--vertical-label=$unit1";
-		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=30";
+		push @options, "DEF:DSone=data/data-sensor-".$sensor."-".$type.".rrd:$ds1:AVERAGE:step=60";
 		push @options, $cdef5;
 		push @options, "LINE1:avgDSone#0000FF:$ds1_title";
 	} elsif ($particle == 6) {
 		push @options, "--vertical-label=$unit2";
-		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=30";
+		push @options, "DEF:DStwo=data/data-sensor-".$sensor."-".$type.".rrd:$ds2:AVERAGE:step=60";
 		push @options, $cdef6;
 		push @options, "LINE1:avgDStwo#0000FF:$ds2_title";
 	}
@@ -121,8 +121,6 @@ sub create_graph {
 }
 
 my $daydir = "mirror/archive.luftdaten.info/".$ARGV[0];
-
-print $daydir."\n";
 
 my @files_per_day = <$daydir/*.csv>;
 
@@ -139,7 +137,7 @@ foreach my $file (@files_per_day) {
 	if ($sensor_type eq "ppd42ns") {
 		$dataset_1 = "DS:PMone:GAUGE:300:U:U";
 		$dataset_2 = "DS:PMtwo:GAUGE:300:U:U";
-	} elsif ($sensor_type eq "ssd011") {
+	} elsif ($sensor_type eq "sds011") {
 		$dataset_1 = "DS:PMone:GAUGE:300:U:U";
 		$dataset_2 = "DS:PMtwo:GAUGE:300:U:U";
 	} elsif ($sensor_type eq "dht22") {
@@ -152,7 +150,7 @@ foreach my $file (@files_per_day) {
 
 	if (! -f 'data/data-sensor-'.$sensor_name.'-'.$sensor_type.'.rrd') {
 		RRDs::create(
-			"data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "--step=30", "--start=946684800",
+			"data/data-sensor-".$sensor_name."-".$sensor_type.".rrd", "--step=60", "--start=946684800",
 			$dataset_1, $dataset_2,
 			"RRA:AVERAGE:0,99999:1:92160", "RRA:AVERAGE:0,99999:30:35136", "RRA:AVERAGE:0,99999:720:14640",
 		);
@@ -175,6 +173,8 @@ foreach my $file (@files_per_day) {
 				if (($fields[6] > 0) && ($fields[8] < 15)) { $data1 = $fields[6]; }
 				if (($fields[9] > 0) && ($fields[11] < 15)) { $data2 = $fields[9]; }
 			} elsif ($sensor_type eq "sds011") {
+				$data1 = $fields[6];
+				$data2 = $fields[9];
 			} elsif ($sensor_type eq "dht22") {
 				$data1 = $fields[6];
 				$data2 = $fields[7];
@@ -189,6 +189,8 @@ foreach my $file (@files_per_day) {
 		}
 	}
 }
+
+($y,$m,$d) = split("-",$ARGV[0]);
 
 # create image dir per day if needed
 if (! -d "images/$y$m$d") {

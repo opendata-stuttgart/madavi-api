@@ -4,7 +4,6 @@ export DATE=`/bin/date -d yesterday +%F`
 export WORKPATH=$(dirname $(readlink -f $0))
 
 echo Datum: $DATE
-echo $WORKPATH
 cd $WORKPATH/mirror
 host archive.luftdaten.info
 sleep 10

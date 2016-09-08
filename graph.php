@@ -2,29 +2,84 @@
 <head>
 <meta name="viewport" content="width=device-width">
 <style type="text/css">
-img {
-	width: 98%;
-	max-width: 500px;
-}
+img { width: 98%; max-width: 500px; }
+.hidden {display: none;}
 </style>
+<script type="text/javascript">
+function show_only(sensor) {
+        var graphs = document.getElementsByName("graphrow");
+        var linebreaks = document.getElementsByName("graphrowlinebreak");
+        for (var i=0; i< graphs.length; i++) {
+                if (graphs[i].id != 'sensor_'+sensor) {
+                        graphs[i].className = 'hidden';
+                        linebreaks[i].className = 'hidden';
+                } else {
+                        graphs[i].className = '';
+                        linebreaks[i].className = '';
+                }
+        }
+}
+function filter_type(type) {
+        var graphs = document.getElementsByName("graphtable");
+        for (var i=0; i< graphs.length; i++) {
+                if (graphs[i].id.indexOf(type) == -1) {
+                        graphs[i].className = 'hidden';
+                } else {
+                        graphs[i].className = '';
+                }
+        }
+}
+function show_all() {
+        var graphs = document.getElementsByName("graphtable");
+        for (var i=0; i< graphs.length; i++) {
+		graphs[i].className = '';
+	}
+        var graphs = document.getElementsByName("graphrow");
+        for (var i=0; i< graphs.length; i++) {
+		graphs[i].className = '';
+	}
+        var graphs = document.getElementsByName("graphrowlinebreak");
+        for (var i=0; i< graphs.length; i++) {
+		graphs[i].className = '';
+	}
+}
+</script>
 </head>
 <body>
 <a href="graph.php?showday">über einen Tag</a> - <a href="graph.php?showweek">über eine Woche</a> - <a href="graph.php?showmonth">über einen Monat</a> - <a href="graph.php?showfloat">gleitender 24h-Durchschnitt</a><br /><br />
+Filter: <a href="#" onclick="filter_type('sds');return false;">SDS</a> - 
+<a href="#" onclick="filter_type('ppd42ns');return false;">ppd42ns</a> - 
+<a href="#" onclick="filter_type('dht');return false;">DHT</a> | <a href="#" onclick="show_all();return false;">Alle wieder anzeigen</a>
+<br /><br />
 <?php
 
 $sensorplaces['esp8266-422191-sds011'] = "Rajko";
 $sensorplaces['esp8266-422557-ppd42ns'] = "Rajko";
 $sensorplaces['esp8266-422191-ppd42ns'] = "Rajko";
+$sensorplaces['esp8266-742561-dht'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-742561-sds011'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-1307034-sds011'] = "Heumaden";
+$sensorplaces['esp8266-2337682-dht'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-2337682-sds011'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-8422504-dht'] = "Birkach";
+$sensorplaces['esp8266-8422504-sds011'] = "Birkach";
+$sensorplaces['esp8266-9136089-dht'] = "Leonberg (E.T.)";
+$sensorplaces['esp8266-9136089-ppd42ns'] = "Leonberg (E.T.)";
 $sensorplaces['esp8266-9136089-sds011'] = "Leonberg (E.T.)";
 $sensorplaces['esp8266-10696119-ppd42ns'] = "Stuttgart Vergleichsmessungen";
+$sensorplaces['esp8266-13596969-dht'] = "Berkheim";
+$sensorplaces['esp8266-13596969-ppd42ns'] = "Berkheim";
 $sensorplaces['esp8266-13597651-ppd42ns'] = "Hedelfingen/Heumaden";
+$sensorplaces['esp8266-13597771-dht'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-13597771-ppd42ns'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-13597771-sds011'] = "Stuttgart Pragsattel";
 $sensorplaces['esp8266-13601902-sds011'] = "Rajko";
 $sensorplaces['esp8266-13601904-bmp'] = "Rajko";
 $sensorplaces['esp8266-13601904-dht'] = "Rajko";
 $sensorplaces['esp8266-13601904-ppd42ns'] = "Rajko";
 $sensorplaces['esp8266-13601904-sds011'] = "Rajko";
-$sensorplaces['esp8266-13597771-dht'] = "Stuttgart Pragsattel";
-$sensorplaces['esp8266-13597771-ppd42ns'] = "Stuttgart Pragsattel";
+$sensorplaces['esp8266-13828287-dht'] = "Bernhausen";
+$sensorplaces['esp8266-13828287-ppd42ns'] = "Bernhausen";
 $sensorplaces['esp8266-13927729-ppd42ns'] = "Ostritz bei Görlitz";
 $sensorplaces['esp8266-14426623-ppd42ns'] = "Birkach";
 $sensorplaces['esp8266-14697627-ppd42ns'] = "OKLab Köln";
@@ -129,13 +184,15 @@ if (isset($_GET['sensor'])) {
 
 	foreach (glob("data/*-highres.rrd") as $filename) {
 		$sensor = substr($filename,10,-12);
-		echo "<a href='graph.php?sensor=".$sensor."'>".$sensor."</a> (";
-		if (isset($sensorplaces[$sensor])) echo $sensorplaces[$sensor];
-		echo ")<br />\n";
+                echo "<table name='graphtable' id='table_".$sensor."'><tr><td colspan='2'><a href='graph.php?sensor=".$sensor.$daystr."'>".$sensor."(".$sensorplaces[$sensor].")</a>
+                - <a href='#' onclick='show_only(\"".$sensor."\"); return false;'>nur diesen Sensor zeigen</a>
+                </td></tr>\n";
 		create_graph("images/sensor-".$sensor."-1-floating.png", "-8d", "Floating 24h average over 7 days",$sensor,101);
 		create_graph("images/sensor-".$sensor."-25-floating.png", "-8d", "Floating 24h average over 7 days",$sensor,125);
-		echo "<img src='images/sensor-".$sensor."-1-floating.png' alt='Floating 24h average over 7 days'>
-		<img src='images/sensor-".$sensor."-25-floating.png' alt='Floating 24h average over 7 days'><br /><br /><br />";
+		echo "<tr name ='graphrow' id='sensor_".$sensor."'><td><img src='images/sensor-".$sensor."-1-floating.png' alt='Floating 24h average over 7 days'></td>
+                <td><img src='images/sensor-".$sensor."-25-floating.png' alt='Floating 24h average over 7 days'></td></tr>
+		<tr name='graphrowlinebreak'><td colspan='2'><br /></td></tr>
+                </table>";
 	}
 
 } else {
@@ -183,22 +240,22 @@ function create_graph($output, $start, $title, $sensor, $option_nr) {
 
 	if ($option_nr === 1) {
 		array_push($options,"--vertical-label=$unit1");
-		array_push($options,"DEF:DSone=data/data-$sensor-highres.rrd:$ds1:AVERAGE:step=30");
+		array_push($options,"DEF:DSone=data/data-$sensor-highres.rrd:$ds1:AVERAGE:step=60");
 		array_push($options,"CDEF:avgDSone=DSone,300,TRENDNAN"); // 5 min (300 sec) floating average
 		array_push($options,"LINE1:avgDSone#FF0000:$ds1_title");
 	} else if ($option_nr === 25) {
 		array_push($options,"--vertical-label=$unit2");
-		array_push($options,"DEF:DStwo=data/data-$sensor-highres.rrd:$ds2:AVERAGE:step=30");
+		array_push($options,"DEF:DStwo=data/data-$sensor-highres.rrd:$ds2:AVERAGE:step=60");
 		array_push($options,"CDEF:avgDStwo=DStwo,300,TRENDNAN"); // 5 min (300 sec) floating average
 		array_push($options,"LINE1:avgDStwo#0000FF:$ds2_title");
 	} else if ($option_nr === 101) {
 		array_push($options,"--vertical-label=$unit1");
-		array_push($options,"DEF:DSone=data/data-$sensor-highres.rrd:$ds1:AVERAGE:step=30");
+		array_push($options,"DEF:DSone=data/data-$sensor-highres.rrd:$ds1:AVERAGE:step=60");
 		array_push($options,"CDEF:avgDSone=DSone,86400,TRENDNAN"); // 24h (24 * 60 * 60 = 86400 sec) floating average
 		array_push($options,"LINE1:avgDSone#FF0000:$ds1_title");
 	} else if ($option_nr === 125) {
 		array_push($options,"--vertical-label=$unit2");
-		array_push($options,"DEF:DStwo=data/data-$sensor-highres.rrd:$ds2:AVERAGE:step=30");
+		array_push($options,"DEF:DStwo=data/data-$sensor-highres.rrd:$ds2:AVERAGE:step=60");
 		array_push($options,"CDEF:avgDStwo=DStwo,86400,TRENDNAN"); // 24h (24 * 60 * 60 = 86400 sec) floating average
 		array_push($options,"LINE1:avgDStwo#0000FF:$ds2_title");
 	}

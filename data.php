@@ -5,6 +5,8 @@ $json = file_get_contents('php://input');
 
 $results = json_decode($json,true);
 
+header_remove();
+
 $now = gmstrftime("%Y/%m/%d %H:%M:%S");
 $today = gmstrftime("%Y-%m-%d");
 
@@ -21,21 +23,21 @@ if (isset($values["BMP_temperature"]) && isset($values["BMP_pressure"])) { $has_
 
 // print transmitted values
 echo "Sensor: ".$headers['Sensor']."\r\n";
-if (isset($values["P1"])) echo "P1: ".$values["P1"]."\r\n";
-if (isset($values["P2"])) echo "P2: ".$values["P2"]."\r\n";
-if (isset($values["temperature"])) echo "DHT temp.: ".$values["temperature"]."\r\n";
-if (isset($values["humidity"])) echo "DHT humidity: ".$values["humidity"]."\r\n";
-if (isset($values["BMP_pressure"])) echo "BMP pressure: ".$values["BMP_pressure"]."\r\n";
-if (isset($values["BMP_temperature"])) echo "BMP temp.: ".$values["BMP_temperature"]."\r\n";
-if (isset($values["SDS_P1"])) echo "SDS_P1: ".$values["SDS_P1"]."\r\n";
-if (isset($values["SDS_P2"])) echo "SDS_P2: ".$values["SDS_P2"]."\r\n";
-if (isset($values["samples"])) echo "Samples: ".$values["samples"]."\r\n";
-if (isset($values["min_micro"])) echo "Min cycle: ".$values["min_micro"]."\r\n";
-if (isset($values["max_micro"])) echo "Max cycle: ".$values["max_micro"]."\r\n";
-if ($has_ppd42ns) echo "Daten von PPD42NS gesendet.\r\n";
-if ($has_sds011) echo "Daten von SDS011 gesendet.\r\n";
-if ($has_dht) echo "Daten von DHT gesendet.\r\n";
-if ($has_bmp) echo "Daten von BMP gesendet.\r\n";
+// if (isset($values["P1"])) echo "P1: ".$values["P1"]."\r\n";
+// if (isset($values["P2"])) echo "P2: ".$values["P2"]."\r\n";
+// if (isset($values["temperature"])) echo "DHT t: ".$values["temperature"]."\r\n";
+// if (isset($values["humidity"])) echo "DHT h: ".$values["humidity"]."\r\n";
+// if (isset($values["BMP_pressure"])) echo "BMP p: ".$values["BMP_pressure"]."\r\n";
+// if (isset($values["BMP_temperature"])) echo "BMP t: ".$values["BMP_temperature"]."\r\n";
+// if (isset($values["SDS_P1"])) echo "SDS_P1: ".$values["SDS_P1"]."\r\n";
+// if (isset($values["SDS_P2"])) echo "SDS_P2: ".$values["SDS_P2"]."\r\n";
+// if (isset($values["samples"])) echo "Samples: ".$values["samples"]."\r\n";
+// if (isset($values["min_micro"])) echo "Min cycle: ".$values["min_micro"]."\r\n";
+// if (isset($values["max_micro"])) echo "Max cycle: ".$values["max_micro"]."\r\n";
+// if ($has_ppd42ns) echo "Daten von PPD42NS gesendet.\r\n";
+// if ($has_sds011) echo "Daten von SDS011 gesendet.\r\n";
+// if ($has_dht) echo "Daten von DHT gesendet.\r\n";
+// if ($has_bmp) echo "Daten von BMP gesendet.\r\n";
 
 // check if data dir exists, create if not
 if (!file_exists('data')) {
@@ -49,7 +51,7 @@ if ($has_ppd42ns) {
 	if ($values["ratioP1"] < 15) { $update_string_ppd42ns .= $values["P1"]; }
 	$update_string_ppd42ns .= ":";
 	if ($values["ratioP2"] < 15) { $update_string_ppd42ns .= $values["P2"]; }
-	echo $update_string_ppd42ns."\r\n";
+//	echo $update_string_ppd42ns."\r\n";
 }
 
 if ($has_sds011) {
@@ -63,7 +65,7 @@ if ($has_sds011) {
 		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["P2"];
 	}
-	echo $update_string_sds011."\r\n";
+//	echo $update_string_sds011."\r\n";
 }
 
 if ($has_dht) {
@@ -71,7 +73,7 @@ if ($has_dht) {
 	$update_string_dht .= $values["temperature"];
 	$update_string_dht .= ":";
 	$update_string_dht .= $values["humidity"];
-	echo $update_string_dht."\r\n";
+//	echo $update_string_dht."\r\n";
 }
 
 if ($has_bmp) {
@@ -79,7 +81,7 @@ if ($has_bmp) {
 	$update_string_bmp .= $values["BMP_temperature"];
 	$update_string_bmp .= ":";
 	$update_string_bmp .= $values["BMP_pressure"];
-	echo $update_string_bmp."\r\n";
+//	echo $update_string_bmp."\r\n";
 }
 
 // update ppd42ns rrd file
@@ -89,7 +91,7 @@ if ($has_ppd42ns) {
 
 	if (!file_exists($datafile)) {
 		$opts = array(
-			"--step", "30", "--start", time(),
+			"--step", "60", "--start", time(),
 			"DS:PMone:GAUGE:55:U:U",
 			"DS:PMtwo:GAUGE:55:U:U",
 			"RRA:AVERAGE:0.5:1:25920",
@@ -101,6 +103,11 @@ if ($has_ppd42ns) {
 			$err = rrd_error();
 			echo "<b>Creation error: </b> $err\n";
 		}
+	}
+
+	if ($results["software_version"] >= "NRZ-2016-024") {
+		$update_string_ppd42ns_past = (time()-30) . substr($update_string_ppd42ns,strpos($update_string_ppd42ns,":")); 
+		$ret = rrd_update($datafile,array($update_string_ppd42ns_past));
 	}
 
 	$ret = rrd_update($datafile,array($update_string_ppd42ns));
@@ -131,6 +138,11 @@ if ($has_sds011) {
 		}
 	}
 
+	if ($results["software_version"] >= "NRZ-2016-024") {
+		$update_string_sds011_past = (time()-30) . substr($update_string_sds011,strpos($update_string_sds011,":")); 
+		$ret = rrd_update($datafile,array($update_string_sds011_past));
+	}
+
 	$ret = rrd_update($datafile,array($update_string_sds011));
 	if (! $ret) {
 		$err = rrd_error();
@@ -159,6 +171,11 @@ if ($has_dht) {
 		}
 	}
 
+	if ($results["software_version"] >= "NRZ-2016-024") {
+		$update_string_dht_past = (time()-30) . substr($update_string_dht,strpos($update_string_dht,":")); 
+		$ret = rrd_update($datafile,array($update_string_dht_past));
+	}
+
 	$ret = rrd_update($datafile,array($update_string_dht));
 	if (! $ret) {
 		$err = rrd_error();
@@ -185,6 +202,11 @@ if ($has_bmp) {
 			$err = rrd_error();
 			echo "<b>Creation error: </b> $err\n";
 		}
+	}
+
+	if ($results["software_version"] >= "NRZ-2016-024") {
+		$update_string_bmp_past = (time()-30) . substr($update_string_bmp,strpos($update_string_bmp,":")); 
+		$ret = rrd_update($datafile,array($update_string_bmp_past));
 	}
 
 	$ret = rrd_update($datafile,array($update_string_bmp));
@@ -218,6 +240,11 @@ if (isset($values["min_micro"]) || isset($values["max_micro"])) {
 			$err = rrd_error();
 			echo "<b>Creation error: </b> $err\n";
 		}
+	}
+
+	if ($results["software_version"] >= "NRZ-2016-024") {
+		$update_string_past = (time()-30) . substr($update_string,strpos($update_string,":")); 
+		$ret = rrd_update($datafile,array($update_string_past));
 	}
 
 	$ret = rrd_update($datafile,array($update_string));
