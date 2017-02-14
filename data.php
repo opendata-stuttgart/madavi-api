@@ -1,6 +1,8 @@
 <?php
 
-$headers['Sensor'] = $_SERVER['HTTP_SENSOR'];
+if (isset($_SERVER['HTTP_SENSOR'])) $headers['Sensor'] = $_SERVER['HTTP_SENSOR'];
+if (isset($_SERVER['HTTP_X_SENSOR']))$headers['Sensor'] = $_SERVER['HTTP_X_SENSOR'];
+
 $json = file_get_contents('php://input');
 
 $results = json_decode($json,true);
@@ -9,6 +11,28 @@ header_remove();
 
 $now = gmstrftime("%Y/%m/%d %H:%M:%S");
 $today = gmstrftime("%Y-%m-%d");
+
+$apiposturl = 'http://api.luftdaten.info/v1/push-sensor-data/';
+
+function post_to_api($data,$pin) {
+	$post_string = "{\"software_version\": \"NRZ-2016-039\", \"sensordatavalues\":[";
+	$post_string .= $data;
+	$post_string = substr($post_string,0,-1);
+	$post_string .= "]}";
+
+	$ch = curl_init( $api_post_url );
+	curl_setopt( $ch, CURLOPT_POST, 1);
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_string);
+	curl_setopt( $ch, CURLOPT_HTTPHEADER,array(	'Host: api.luftdaten.info',
+							'Content-Type: application/json',
+							'X-PIN: '.$pin,
+							'X-Sensor: '.$headers['sensor'],
+							'Content-Length: '.strlen($post_string),
+							'Connection: close'));
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$response = curl_exec( $ch );
+}
 
 // copy sensor data values to values array
 foreach ($results["sensordatavalues"] as $sensordatavalues) {
@@ -46,42 +70,69 @@ if (!file_exists('data')) {
 
 // create update string P1,P2 for ppd42ns
 
+$api_post_string = '';
 if ($has_ppd42ns) {
 	$update_string_ppd42ns = time().":";
 	if ($values["ratioP1"] < 15) { $update_string_ppd42ns .= $values["P1"]; }
 	$update_string_ppd42ns .= ":";
 	if ($values["ratioP2"] < 15) { $update_string_ppd42ns .= $values["P2"]; }
-//	echo $update_string_ppd42ns."\r\n";
+	if (isset($values["samples"])) { $api_post_string .= '{"value_type":"samples","value":"'.$values["samples"].'"},'; }
+	if (isset($values["min_micro"])) { $api_post_string .= '{"value_type":"min_micro","value":"'.$values["min_micro"].'"},'; }
+	if (isset($values["max_micro"])) { $api_post_string .= '{"value_type":"max_micro","value":"'.$values["max_micro"].'"},'; }
+	$api_post_string .= '{"value_type":"P1","value":"'.$values["P1"].'"},';
+	$api_post_string .= '{"value_type":"P2","value":"'.$values["P2"].'"},';
+//	post_to_api($api_post_string,5);
 }
 
+$api_post_string = '';
 if ($has_sds011) {
 	$update_string_sds011 = time().":";
+	if (isset($values["samples"])) { $api_post_string .= '{"value_type":"samples","value":"'.$values["samples"].'"},'; }
+	if (isset($values["min_micro"])) { $api_post_string .= '{"value_type":"min_micro","value":"'.$values["min_micro"].'"},'; }
+	if (isset($values["max_micro"])) { $api_post_string .= '{"value_type":"max_micro","value":"'.$values["max_micro"].'"},'; }
 	if (isset($values["SDS_P1"])) {
 		$update_string_sds011 .= $values["SDS_P1"];
 		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["SDS_P2"];
+		$api_post_string .= '{"value_type":"P1","value":"'.$values["SDS_P1"].'"},';
+		$api_post_string .= '{"value_type":"P2","value":"'.$values["SDS_P2"].'"},';
+//		post_to_api($api_post_string,1);
 	} else {
 		$update_string_sds011 .= $values["P1"];
 		$update_string_sds011 .= ":";
 		$update_string_sds011 .= $values["P2"];
+		$api_post_string .= '{"value_type":"P1","value":"'.$values["P1"].'"},';
+		$api_post_string .= '{"value_type":"P2","value":"'.$values["P2"].'"},';
+//		post_to_api($api_post_string,1);
 	}
-//	echo $update_string_sds011."\r\n";
 }
 
+$api_post_string = '';
 if ($has_dht) {
 	$update_string_dht = time().":";
 	$update_string_dht .= $values["temperature"];
 	$update_string_dht .= ":";
 	$update_string_dht .= $values["humidity"];
-//	echo $update_string_dht."\r\n";
+	if (isset($values["samples"])) { $api_post_string .= '{"value_type":"samples","value":"'.$values["samples"].'"},'; }
+	if (isset($values["min_micro"])) { $api_post_string .= '{"value_type":"min_micro","value":"'.$values["min_micro"].'"},'; }
+	if (isset($values["max_micro"])) { $api_post_string .= '{"value_type":"max_micro","value":"'.$values["max_micro"].'"},'; }
+	$api_post_string .= '{"value_type":"temperature","value":"'.$values["temperature"].'"},';
+	$api_post_string .= '{"value_type":"humidity","value":"'.$values["humidity"].'"},';
+//	post_to_api($api_post_string,7);
 }
 
+$api_post_string = '';
 if ($has_bmp) {
 	$update_string_bmp = time().":";
 	$update_string_bmp .= $values["BMP_temperature"];
 	$update_string_bmp .= ":";
 	$update_string_bmp .= $values["BMP_pressure"];
-//	echo $update_string_bmp."\r\n";
+	if (isset($values["samples"])) { $api_post_string .= '{"value_type":"samples","value":"'.$values["samples"].'"},'; }
+	if (isset($values["min_micro"])) { $api_post_string .= '{"value_type":"min_micro","value":"'.$values["min_micro"].'"},'; }
+	if (isset($values["max_micro"])) { $api_post_string .= '{"value_type":"max_micro","value":"'.$values["max_micro"].'"},'; }
+	$api_post_string .= '{"value_type":"temperature","value":"'.$values["BMP_temperature"].'"},';
+	$api_post_string .= '{"value_type":"pressure","value":"'.$values["BMP_pressure"].'"},';
+//	post_to_api($api_post_string,3);
 }
 
 // update ppd42ns rrd file
@@ -254,12 +305,41 @@ if (isset($values["min_micro"]) || isset($values["max_micro"])) {
 	}
 }
 
+// save max, min sample times
+if (isset($values["signal"])) {
+
+	$update_string = time().":".substr($values["signal"],0,-4).".0";
+
+	$datafile = "data/data-".$headers['Sensor']."-signal.rrd";
+
+	if (!file_exists($datafile)) {
+		$opts = array(
+			"--step", "60", "--start", (time()-14400),
+			"DS:signal:GAUGE:150:U:U",
+			"RRA:AVERAGE:0.5:1:25920",
+			"RRA:AVERAGE:0.5:30:672",
+			"RRA:AVERAGE:0.5:720:1460",
+		);
+		$ret = rrd_create($datafile, $opts);
+		if (! $ret) {
+			$err = rrd_error();
+			echo "<b>Creation error: </b> $err\n";
+		}
+	}
+
+	$ret = rrd_update($datafile,array($update_string));
+	if (! $ret) {
+		$err = rrd_error();
+		echo "<b>Update error: </b> $err\n";
+	}
+}
+
 // save data values to CSV (one per day)
 $datafile = "data/data-".$headers['Sensor']."-".$today.".csv";
 
 if (!file_exists($datafile)) {
 	$outfile = fopen($datafile,"a");
-	fwrite($outfile,"Time;durP1;ratioP1;P1;durP2;ratioP2;P2;SDS_P1;SDS_P2;Temp;Humidity;Pressure;Samples;Min_cycle;Max_cycle\n");
+	fwrite($outfile,"Time;durP1;ratioP1;P1;durP2;ratioP2;P2;SDS_P1;SDS_P2;Temp;Humidity;Pressure;Samples;Min_cycle;Max_cycle;Signal\n");
 	fclose($outfile);
 }
 
@@ -278,9 +358,10 @@ if (! isset($values["BMP_pressure"])) { $values["BMP_pressure"] = ""; }
 if (! isset($values["samples"])) { $values["samples"] = ""; }
 if (! isset($values["min_micro"])) { $values["min_micro"] = ""; }
 if (! isset($values["max_micro"])) { $values["max_micro"] = ""; }
+if (! isset($values["signal"])) { $values["signal"] = ""; } else { $values["signal"] = substr($values["signal"],0,-4); }
 
 $outfile = fopen($datafile,"a");
-fwrite($outfile,$now.";".$values["durP1"].";".$values["ratioP1"].";".$values["P1"].";".$values["durP2"].";".$values["ratioP2"].";".$values["P2"].";".$values["SDS_P1"].";".$values["SDS_P2"].";".$values["temperature"].";".$values["humidity"].";".$values["BMP_temperature"].";".$values["BMP_pressure"].";".$values["samples"].";".$values["min_micro"].";".$values["max_micro"]."\n");
+fwrite($outfile,$now.";".$values["durP1"].";".$values["ratioP1"].";".$values["P1"].";".$values["durP2"].";".$values["ratioP2"].";".$values["P2"].";".$values["SDS_P1"].";".$values["SDS_P2"].";".$values["temperature"].";".$values["humidity"].";".$values["BMP_temperature"].";".$values["BMP_pressure"].";".$values["samples"].";".$values["min_micro"].";".$values["max_micro"].";".$values["signal"]."\n");
 fclose($outfile);
 
 ?>
