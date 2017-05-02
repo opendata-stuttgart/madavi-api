@@ -44,13 +44,21 @@ if(
     exit();
 }
 
+$version_parts = explode(" ",$_SERVER['HTTP_X_ESP8266_VERSION']);
 file_put_contents("headers.txt", gmdate("Y-m-d H:i:s")." - ".$_SERVER['HTTP_X_ESP8266_STA_MAC']." - ".$_SERVER['HTTP_X_ESP8266_AP_MAC']." - ".$_SERVER['HTTP_X_ESP8266_FREE_SPACE']." - ".$_SERVER['HTTP_X_ESP8266_SKETCH_SIZE']." - ".$_SERVER['HTTP_X_ESP8266_CHIP_SIZE']." - ".$_SERVER['HTTP_X_ESP8266_SDK_VERSION']." - ".$_SERVER['HTTP_X_ESP8266_VERSION']."\n", FILE_APPEND | LOCK_EX);
-if(($_SERVER['HTTP_X_ESP8266_VERSION'] != $latest_version) && 
-	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "18:FE:34:CF:8C:70") && 
+
+if (($version_parts[0] != $latest_version) &&
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "18:FE:34:CF:8C:70") &&
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "18:FE:34:CF:7C:4B") &&		// Pragsattel outdoor
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "60:01:94:06:9B:DB") &&		// Jule
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "60:01:94:0B:54:A1") &&		// Greiz
 	($_SERVER['HTTP_X_ESP8266_STA_MAC'] != "18:FE:34:D4:84:16")) {
     sendFile("./data/latest.bin");
-} elseif (($_SERVER['HTTP_X_ESP8266_VERSION'] != $latest_version_beta) && 
-	($_SERVER['HTTP_X_ESP8266_STA_MAC'] == "60:01:94:06:9B:DB:TEST")) {
+} elseif (($version_parts[0] != $latest_version_beta) &&
+	(($_SERVER['HTTP_X_ESP8266_STA_MAC'] == "18:FE:34:CF:7C:4B") ||		// Pragsattel outdoor
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] == "60:01:94:06:9B:DB") ||		// Jule
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] == "60:01:94:0B:54:A1") ||		// Greiz
+	($_SERVER['HTTP_X_ESP8266_STA_MAC'] == "18:FE:34:CF:8C:70"))) {
     sendFile("./data/latest_beta.bin");
 } else {
     header($_SERVER["SERVER_PROTOCOL"].' 304 Not Modified', true, 304);
