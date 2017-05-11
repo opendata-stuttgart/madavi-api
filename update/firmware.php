@@ -38,15 +38,13 @@ function logHeaders(){
     file_put_contents("headers.txt", gmdate("Y-m-d H:i:s")." - ".$_SERVER['HTTP_X_ESP8266_STA_MAC']." - ".$_SERVER['HTTP_X_ESP8266_AP_MAC']." - ".$_SERVER['HTTP_X_ESP8266_FREE_SPACE']." - ".$_SERVER['HTTP_X_ESP8266_SKETCH_SIZE']." - ".$_SERVER['HTTP_X_ESP8266_CHIP_SIZE']." - ".$_SERVER['HTTP_X_ESP8266_SDK_VERSION']." - ".$_SERVER['HTTP_X_ESP8266_VERSION']."\n", FILE_APPEND | LOCK_EX);
 }
 
-function mac_filter_latest_version($mac){
-    $macs[] = "18:FE:34:CF:8C:70";
-    $macs[] = "18:FE:34:CF:7C:4B"; // Pragsattel outdoor
-    $macs[] = "60:01:94:06:9B:DB"; // Jule
-    $macs[] = "60:01:94:0B:54:A1"; // Greiz
+// Nodes with update disabled on server side (test nodes)
+function mac_filter_update_disabled($mac){
     $macs[] = "18:FE:34:D4:84:16";
     return in_array($mac, $macs);
 }
 
+// Nodes for testing beta versions
 function mac_filter_beta_version($mac){
     $macs[] = "18:FE:34:CF:7C:4B"; // Pragsattel outdoor
     $macs[] = "60:01:94:06:9B:DB"; // Jule
@@ -86,7 +84,7 @@ $installed_lang = getLang($version_parts,4);
 //error_log('latest_version: '.$latest_version);
 //error_log('langs: '.$current_lang.':'.$installed_lang);
 
-if (($version_parts[0] != $latest_version || $current_lang != $installed_lang) && !mac_filter_latest_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
+if (($version_parts[0] != $latest_version || $current_lang != $installed_lang) && !mac_filter_update_disabled($_SERVER['HTTP_X_ESP8266_STA_MAC']) && !mac_filter_beta_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
     sendFile("latest",$current_lang);
 } elseif (($version_parts[0] != $latest_version_beta) && mac_filter_beta_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
     sendFile("latest_beta",$current_lang);
