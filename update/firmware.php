@@ -86,7 +86,7 @@ $installed_lang = getLang($version_parts,4);
 
 if (($version_parts[0] != $latest_version || $current_lang != $installed_lang) && !mac_filter_update_disabled($_SERVER['HTTP_X_ESP8266_STA_MAC']) && !mac_filter_beta_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
     sendFile("latest",$current_lang);
-} elseif (($version_parts[0] != $latest_version_beta) && mac_filter_beta_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
+} elseif (($version_parts[0] != $latest_version_beta ||  $current_lang != $installed_lang) && mac_filter_beta_version($_SERVER['HTTP_X_ESP8266_STA_MAC'])) {
     sendFile("latest_beta",$current_lang);
 } else {
     header($_SERVER["SERVER_PROTOCOL"].' 304 Not Modified', true, 304);
