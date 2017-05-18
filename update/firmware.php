@@ -31,7 +31,7 @@ function sendFile($file,$lang) {
 
 function getLang($version_parts,$index){
     $lang = isset($version_parts[$index])?strtolower($version_parts[$index]):'de';
-    return in_array($lang, Array('de','en','bg'))?$lang:'de';   
+    return in_array($lang, Array('de','bg','en','es','fr'))?$lang:'de';
 }
 
 function logHeaders(){
@@ -40,7 +40,7 @@ function logHeaders(){
 
 // Nodes with update disabled on server side (test nodes)
 function mac_filter_update_disabled($mac){
-    $macs[] = "18:FE:34:D4:84:16";
+    $macs[] = "18:FE:34:CF:8C:70"; // Test-Node
     return in_array($mac, $macs);
 }
 
@@ -49,7 +49,6 @@ function mac_filter_beta_version($mac){
     $macs[] = "18:FE:34:CF:7C:4B"; // Pragsattel outdoor
     $macs[] = "60:01:94:06:9B:DB"; // Jule
     $macs[] = "60:01:94:0B:54:A1"; // Greiz
-    $macs[] = "18:FE:34:CF:8C:70";
     return in_array($mac, $macs);
 }
 
