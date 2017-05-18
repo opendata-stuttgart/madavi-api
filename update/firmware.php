@@ -31,7 +31,7 @@ function sendFile($file,$lang) {
 
 function getLang($version_parts,$index){
     $lang = isset($version_parts[$index])?strtolower($version_parts[$index]):'de';
-    return in_array($lang, Array('de','bg','en','es','fr'))?$lang:'de';   
+    return in_array($lang, Array('de','bg','en','es','fr'))?$lang:'de';
 }
 
 function logHeaders(){
@@ -40,7 +40,6 @@ function logHeaders(){
 
 // Nodes with update disabled on server side (test nodes)
 function mac_filter_update_disabled($mac){
-    $macs[] = "18:FE:34:D4:84:16";
     $macs[] = "18:FE:34:CF:8C:70"; // Test-Node
     return in_array($mac, $macs);
 }
