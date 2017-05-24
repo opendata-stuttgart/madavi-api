@@ -31,7 +31,7 @@ function sendFile($file,$lang) {
 
 function getLang($version_parts,$index){
     $lang = isset($version_parts[$index])?strtolower($version_parts[$index]):'de';
-    return in_array($lang, Array('de','bg','en','es','fr'))?$lang:'de';
+    return in_array($lang, Array('de','bg','en','es','fr','nl'))?$lang:'de';
 }
 
 function logHeaders(){
@@ -90,4 +90,3 @@ if (($version_parts[0] != $latest_version || $current_lang != $installed_lang) &
 } else {
     header($_SERVER["SERVER_PROTOCOL"].' 304 Not Modified', true, 304);
 }
-
