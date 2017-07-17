@@ -1,5 +1,6 @@
 <?php
 
+$headers = array();
 if (isset($_SERVER['HTTP_SENSOR'])) $headers['Sensor'] = $_SERVER['HTTP_SENSOR'];
 if (isset($_SERVER['HTTP_X_SENSOR']))$headers['Sensor'] = $_SERVER['HTTP_X_SENSOR'];
 
@@ -12,9 +13,11 @@ header_remove();
 $now = gmstrftime("%Y/%m/%d %H:%M:%S");
 $today = gmstrftime("%Y-%m-%d");
 
-$apiposturl = 'http://api.luftdaten.info/v1/push-sensor-data/';
+$api_post_url = 'http://api.luftdaten.info/v1/push-sensor-data/';
 
 function post_to_api($data,$pin) {
+    global $api_post_url, $headers;
+
 	$post_string = "{\"software_version\": \"NRZ-2016-039\", \"sensordatavalues\":[";
 	$post_string .= $data;
 	$post_string = substr($post_string,0,-1);

@@ -1,6 +1,7 @@
 <?php
 
 // read sensor ID ('esp8266-'+ChipID)
+$headers = array();
 if (isset($_SERVER['HTTP_SENSOR'])) $headers['Sensor'] = $_SERVER['HTTP_SENSOR'];
 if (isset($_SERVER['HTTP_X_SENSOR']))$headers['Sensor'] = $_SERVER['HTTP_X_SENSOR'];
 

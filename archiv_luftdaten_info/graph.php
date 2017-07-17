@@ -47,6 +47,7 @@ function show_all() {
 <?php
 
 // known sensorplaces
+$sensorplaces = array();
 $sensorplaces[49] = 'Herrenberg (OT Haslach)';
 $sensorplaces[54] = 'Stöckach';
 $sensorplaces[59] = 'Bad Cannstatt';
