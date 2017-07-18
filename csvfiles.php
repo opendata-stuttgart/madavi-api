@@ -3,7 +3,7 @@
 </head>
 <body>
 <?php
-if ($_GET['sensor']) {
+if (!empty($_GET['sensor'])) {
 
 // view files (per date) for selected sensor
 

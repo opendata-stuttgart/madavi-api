@@ -13,7 +13,6 @@ flush();
 $handle = popen("zip -r -q - data/*.csv","r");
 while (!feof($handle)) {
 	print fread($handle, 1024);
-	echo $read;
 	flush();
 }
 

@@ -52,7 +52,7 @@ Filter: <a href="#" onclick="filter_type('sds');return false;">SDS</a> -
 <a href="#" onclick="filter_type('dht');return false;">DHT</a> | <a href="#" onclick="show_all();return false;">Alle wieder anzeigen</a>
 <br /><br />
 <?php
-
+$sensorplaces = array();
 $sensorplaces['esp8266-422191-sds011'] = "Rajko";
 $sensorplaces['esp8266-422557-ppd42ns'] = "Rajko";
 $sensorplaces['esp8266-422191-ppd42ns'] = "Rajko";
